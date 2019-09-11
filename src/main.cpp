@@ -30,7 +30,10 @@ Motor A(PWM_A, PHASE_A, 100, true);
 
 Wheel Whe(R,L,B,100);
 
-int speed = 100;
+
+int DEFAULT_SPEAD = 100;
+
+int speed = DEFAULT_SPEAD;
 char ch;
 
 void Joystick(int8_t x, int8_t y,int8_t rx, int8_t ay){
@@ -92,6 +95,7 @@ void Joystick(int8_t x, int8_t y,int8_t rx, int8_t ay){
 
 }
 
+//**Buttons**// x, a, b, y, lb, rb, lt, rt, back, start, / / ↑, ↓, ←, → //**Buttons**//
 void Button(std::vector<bool> buttons){
     if (buttons[0] == 1){
         pc.printf("X\r\n");
@@ -102,6 +106,12 @@ void Button(std::vector<bool> buttons){
         pc.printf("B\r\n");
         SR.pulsewidth_us(800);
         SL.pulsewidth_us(500);
+    }
+    if (buttons[3] == 1){
+        pc.printf("Y\r\n");
+        speed = DEFAULT_SPEAD * 2; //加速
+    }else{
+        speed = DEFAULT_SPEAD;
     }
 }
 
