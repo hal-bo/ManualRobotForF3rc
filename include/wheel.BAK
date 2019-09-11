@@ -1,0 +1,31 @@
+#include <mbed.h>
+#include "motor.h"
+​
+/* 
+ * オムニホイール4輪を制御するためのクラス．
+ * motor.hをインクルードする前提．
+ * メカナム4輪や，オムニ3輪も少し改造すれば簡単に実装できるはず．
+ */
+​
+class Wheel
+{
+private:
+    Motor &A, &B, &C, ; 
+    const uint32_t pow;
+​
+public:
+    /* Constructor */
+    Wheel(Motor &, Motor &, Motor &, Motor &, uint32_t pow);
+​
+    void Brake(void);
+    void front(uint32_t PulseWidth);
+    void right(uint32_t PulseWidth);
+    void left(uint32_t PulseWidth);
+    void back(uint32_t PulseWidth);
+    void upperright(uint32_t PulseWidth);
+    void upperleft(uint32_t PulseWidth);
+    void backright(uint32_t PulseWidth);
+    void backleft(uint32_t PulseWidth);
+    void rotate_right(uint32_t PulseWidth);
+    void rotate_left(uint32_t PulseWidth);
+};

@@ -1,0 +1,143 @@
+#include "wheel.h"
+
+Wheel::Wheel(Motor &_A, Motor &_B, Motor &_C,  uint32_t _pow) : A(_A), B(_B), C(_C), pow(_pow)
+{
+}
+
+void Wheel::Brake(void)
+{
+    A.Brake();
+    B.Brake();
+    C.Brake();
+
+}
+​
+void Wheel::front(uint32_t pulsewidth)
+{
+    A.Brake();
+    B.CW(pulsewidth);
+    C.CW(pulsewidth);
+
+}
+
+void Wheel::frontright(uint32_t pulsewidth)
+{
+    A.CW(pulsewidth);
+    B.CW(pulsewidth);
+    C.Brake();
+
+}
+
+void Wheel::frontleft(uint32_t pulsewidth)
+{
+    A.CW(pulsewidth);
+    B.Brake();
+    C.CW(pulsewidth);
+
+}
+
+void Wheel::right(uint32_t pulsewidth)
+{
+    A.CCW(pulsewidth);
+    B.Brake();
+    C.Brake();
+
+}
+
+void Wheel::left(uint32_t pulsewidth)
+{
+    A.CW(pulsewidth);
+    B.Brake();
+    C.Brake();
+
+}
+
+void Wheel::backright(uint32_t pulsewidth)
+{
+    A.CCW(pulsewidth);
+    B.Brake();
+    C.CCW(pulsewidth);
+
+}
+
+void Wheel::backleft(uint32_t pulsewidth)
+{
+    A.CW(pulsewidth)
+    B.CCW(pulsewidth);
+    C.Brake();
+
+}
+
+void Wheel::back(uint32_t pulsewidth)
+{
+    A.Brake();
+    B.CCW(pulsewidth);
+    C.CCW(pulsewidth);
+
+}
+
+void Wheel::rotate_right(uint32_t pulsewidth)
+{
+    A.CCW(pulsewidth);
+    B.CCW(pulsewidth);
+    C.CCW(pulsewidth);
+
+}
+
+void Wheel::rotate_left(uint32_t pulsewidth)
+{
+    A.CW(pulsewidth);
+    B.CW(pulsewidth);
+    C.CW(pulsewidth);
+
+}
+void Wheel::Joystick(int8_t x, int8_t y){
+    y=-y;
+
+
+    if(y>30){
+        if(x>30){
+            pc.printf("upperright\n");
+            moveupperright(200);
+            }
+        else if(x<-30){
+            pc.printf("upperleft\n");
+            moveupperleft(200);
+        }
+        else{
+            pc.printf("front\n");
+            movefront(200);
+            }
+            }
+     if(y<-30){
+         if(x>30){
+             pc.printf("lowerright\n");
+             movelowerright(200);
+             }
+         else if(x<-30){
+             pc.printf("lowerleft\n");
+             movelowerleft(200);
+             }
+         else{
+             pc.printf("back\n");
+             moveback(200);
+             }
+             }
+    if((-30<=y)==(y<=30)){
+        if(x>30){
+            pc.printf("right\n");
+            moveright(200);
+            }
+        else if(x<-30){
+            pc.printf("left\n");
+            moveleft(200);
+            }
+        else{
+        pc.printf("stop\n");
+        w1.Brake();
+        w2.Brake();
+        w3.Brake();
+        w4.Brake();
+        }
+    }
+}
