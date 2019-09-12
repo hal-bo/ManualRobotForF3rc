@@ -35,6 +35,7 @@ int DEFAULT_SPEAD = 100;
 int servo_diff = 0;
 bool button_RB = false;
 bool button_LB = false;
+
 int speed = DEFAULT_SPEAD;
 char ch;
 
@@ -133,6 +134,12 @@ void Button(std::vector<bool> buttons){
         }
     }else{
         button_RB = false;
+    }
+    if (buttons[3] == 1){
+        pc.printf("Y\r\n");
+        speed = DEFAULT_SPEAD * 2; //加速
+    }else{
+        speed = DEFAULT_SPEAD;
     }
 }
 
