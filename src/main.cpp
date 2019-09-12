@@ -15,8 +15,8 @@ PwmOut PWM_L(PA_0);
 PwmOut PWM_B(PA_6);
 PwmOut PWM_A(PB_6);
 
-PwmOut SR(PA_15);
-PwmOut SL(PB_7);
+PwmOut SR(PB_7);
+PwmOut SL(PA_15);
 
 DigitalOut PHASE_R(PC_11);
 DigitalOut PHASE_L(PD_2);
@@ -30,12 +30,17 @@ Motor A(PWM_A, PHASE_A, 100, true);
 
 Wheel Whe(R,L,B,100);
 
-int speed = 100;
+
+int DEFAULT_SPEAD = 100;
+int servo_diff = 0;
+bool button_RB = false;
+bool button_LB = false;
+int speed = DEFAULT_SPEAD;
 char ch;
 
 void Joystick(int8_t x, int8_t y,int8_t rx, int8_t ay){
     y=-y;
-    ay = -ay;
+    ay=-ay;
 
     pc.printf("******************JoyStick %d %d **************************\r\n",x,y);
     if(y>30){
@@ -88,20 +93,46 @@ void Joystick(int8_t x, int8_t y,int8_t rx, int8_t ay){
         pc.printf("ArmDown\n");
         A.CCW(20);
     }
-    
-
 }
 
+//**Buttons**// x, a, b, y, lb, rb, lt, rt, back, start, / / ↑, ↓, ←, → //**Buttons**//
 void Button(std::vector<bool> buttons){
-    if (buttons[0] == 1){
-        pc.printf("X\r\n");
-        SR.pulsewidth_us(500);
-        SL.pulsewidth_us(800);
+    //X ボタン
+    if(buttons[0] == 1){
+        pc.printf("X\r\n");//閉じたとき
+        SR.pulsewidth_us(1000 + servo_diff);
+        SL.pulsewidth_us(1500 - servo_diff);
     }
-    if (buttons[2] == 1){
-        pc.printf("B\r\n");
-        SR.pulsewidth_us(800);
-        SL.pulsewidth_us(500);
+    //B ボタン
+    if(buttons[2] == 1){
+        pc.printf("B\r\n");//開いたとき
+        SR.pulsewidth_us(1500);
+        SL.pulsewidth_us(1000);
+    }
+    //Y ボタン
+    if(buttons[3] == 1){
+        pc.printf("Y\r\n");
+        speed = DEFAULT_SPEAD * 2; //加速
+    }else{
+        speed = DEFAULT_SPEAD;
+    }
+    //LB ボタン
+    if(buttons[4]){
+        if(!button_LB){
+            button_LB = true;
+            servo_diff = servo_diff - 25; //アームの閉まり具合を強くする
+        }
+    }else{
+        button_LB = false;
+    }
+    //RB ボタン
+    if(buttons[5]){
+        if(!button_RB){
+            button_RB = true;
+            servo_diff = servo_diff + 25; //アームの閉まり具合を弱くする
+        }
+    }else{
+        button_RB = false;
     }
 }
 
@@ -109,6 +140,8 @@ void Button(std::vector<bool> buttons){
 int main()
 {
   led = 1;
+  SR.period_ms(20);
+  SL.period_ms(20);
   while(1)
   {
     
@@ -125,7 +158,7 @@ int main()
             ch = pc.getc();
             if(ch == 'w'){
                 pc.printf("front\r\n");
-                Joystick(0, -speed, 0, 0);
+                Joystick(0, -1*speed, 0, 0);
             }else if(ch == 'd'){
                 pc.printf("right\r\n");
                 Joystick(speed, 0, 0, 0);
@@ -134,27 +167,27 @@ int main()
                 Joystick(0, speed, 0, 0);
             }else if(ch == 'a'){
                 pc.printf("left\r\n");
-                Joystick(-speed, 0, 0, 0);
+                Joystick(-1*speed, 0, 0, 0);
             }else if(ch == 'g'){
                 pc.printf("rotateleft\r\n");
-                Joystick(0, 0, -speed, 0);
+                Joystick(0, 0, -1*speed, 0);
             }else if(ch == 'h'){
                 pc.printf("rotateright\r\n");
                 Joystick(0, 0, speed, 0);
             }else if(ch == 'i'){
                 pc.printf("armup\r\n");
-                Joystick(0, 0, 0, -speed);
+                Joystick(0, 0, 0, -1*speed);
             }else if(ch == 'k'){
                 pc.printf("armdown\r\n");
                 Joystick(0, 0, 0, speed);
             }else if(ch == 'l'){
                 pc.printf("armopen\r\n");
-                SR.pulsewidth_us(500);
-                SL.pulsewidth_us(800);
+                SR.pulsewidth_us(1500);
+                SL.pulsewidth_us(1000);
             }else if(ch == 'j'){
                 pc.printf("armclose\r\n");
-                SR.pulsewidth_us(800);
-                SL.pulsewidth_us(500);
+                SR.pulsewidth_us(1000 + servo_diff);
+                SL.pulsewidth_us(1500 - servo_diff);
             }
             //pc.printf("%c\r\n",ch);
         }
