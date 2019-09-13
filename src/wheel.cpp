@@ -48,7 +48,7 @@ void Wheel::Left(uint32_t pulsewidth)//mis
 {
     R.Brake();
     L.Brake();
-    B.CCW(pulsewidth);
+    B.CW(pulsewidth);
 
 }
 
