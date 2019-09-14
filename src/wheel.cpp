@@ -38,16 +38,16 @@ void Wheel::FrontLeft(uint32_t pulsewidth)
 
 void Wheel::Right(uint32_t pulsewidth)
 {
-    R.Brake();
-    L.Brake();
+    R.CW(pulsewidth/2);
+    L.CW(pulsewidth/2);
     B.CCW(pulsewidth);
 
 }
 
 void Wheel::Left(uint32_t pulsewidth)//mis
 {
-    R.Brake();
-    L.Brake();
+    R.CCW(pulsewidth/2);
+    L.CCW(pulsewidth/2);
     B.CW(pulsewidth);
 
 }
@@ -78,17 +78,17 @@ void Wheel::Back(uint32_t pulsewidth)
 
 void Wheel::RotateRight(uint32_t pulsewidth)
 {
-    R.CCW(pulsewidth);
-    L.CCW(pulsewidth);
-    B.CCW(pulsewidth);
+    R.CW(pulsewidth);
+    L.CW(pulsewidth);
+    B.CW(pulsewidth);
 
 }
 
 void Wheel::RotateLeft(uint32_t pulsewidth)
 {
-    R.CW(pulsewidth);
-    L.CW(pulsewidth);
-    B.CW(pulsewidth);
+    R.CCW(pulsewidth);
+    L.CCW(pulsewidth);
+    B.CCW(pulsewidth);
 
 }
 

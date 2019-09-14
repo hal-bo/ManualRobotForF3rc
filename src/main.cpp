@@ -7,8 +7,8 @@ InterruptIn UB(USER_BUTTON);
 DigitalOut led(LED2);
 Serial pc(USBTX, USBRX); 
 
-CAN can1(PA_11, PA_12, 500000);
-Controller controller(can1, 0x334);
+CAN can(PA_11, PA_12, 500000);
+Controller controller(can, 0x334);
 
 PwmOut PWM_R(PA_8);
 PwmOut PWM_L(PA_0);
@@ -32,7 +32,7 @@ Wheel Whe(R,L,B,100);
 
 
 int DEFAULT_SPEAD = 20000;
-int armSpeed = 8000;
+int DEFAULT_ARM_SPEED = 8000;
 int servo_diff = 0;
 bool button_RB = false;
 bool button_LB = false;
@@ -43,8 +43,59 @@ char ch;
 void Control(int8_t x, int8_t y,int8_t rx, int8_t ay,std::vector<bool> buttons){
     y=-y;
     ay=-ay;
-    //pc.printf("speed: %d\r\n",speed);
-    //pc.printf("******************JoyStick %d %d **************************\r\n",x,y);
+
+    //**Button関数**//
+    //X ボタン
+    if(buttons[0]){
+        pc.printf("X\r\n");//閉じたとき
+        SR.pulsewidth_us(1000 + servo_diff);
+        SL.pulsewidth_us(1500 - servo_diff);
+    }
+    //B ボタン
+    if(buttons[2]){
+        pc.printf("B\r\n");//開いたとき
+        SR.pulsewidth_us(1500);
+        SL.pulsewidth_us(1000);
+    }
+    //Y ボタン
+    if(buttons[3]){
+        pc.printf("Y\r\n");
+        speed = DEFAULT_SPEAD * 2; //加速(現状デフォルトが最速なので変化なし)
+    }else{
+        speed = DEFAULT_SPEAD;
+    }
+    //LB ボタン
+    if(buttons[4]){
+        pc.printf("LB\r\n");
+        if(!button_LB){
+            button_LB = true;
+            servo_diff = servo_diff - 25; //アームの閉まり具合を強くする
+        }
+    }else{
+        button_LB = false;
+    }
+    //RB ボタン
+    if(buttons[5]){
+        pc.printf("RB\r\n");
+        if(!button_RB){
+            button_RB = true;
+            servo_diff = servo_diff + 25; //アームの閉まり具合を弱くする
+        }
+    }else{
+        button_RB = false;
+    }
+
+    if(buttons[6]){
+        pc.printf("LT\r\n");
+        Whe.RotateLeft(speed);
+    }
+    //B ボタン
+    if(buttons[7]){
+        pc.printf("RT\r\n");
+        Whe.RotateRight(speed);
+    }
+
+    //**JoyStick関数**//
     if(y>30){
         if(x>30){
             pc.printf("FrontRight\r\n");
@@ -87,72 +138,20 @@ void Control(int8_t x, int8_t y,int8_t rx, int8_t ay,std::vector<bool> buttons){
     if((rx > -30) && (rx < 30)){
         if(ay>30){
             pc.printf("ArmUp\r\n");
-            A.CCW(armSpeed);
+            A.CCW(DEFAULT_ARM_SPEED);
         }else if(ay<-30){
             pc.printf("ArmDown\r\n");
-            A.CW(armSpeed);
+            A.CW(DEFAULT_ARM_SPEED);
         }else{
             A.Brake();
         }
     }else{
         A.Brake();
     }
-
-    for (std::vector<bool>::iterator i = buttons.begin(); i != buttons.end(); i++)
-    {
-        //pc.putc(*i ? '1' : '0');
-    }
-    //X ボタン
-    if(buttons[0]){
-        pc.printf("X\r\n");//閉じたとき
-        SR.pulsewidth_us(1000 + servo_diff);
-        SL.pulsewidth_us(1500 - servo_diff);
-    }
-    //B ボタン
-    if(buttons[2]){
-        pc.printf("B\r\n");//開いたとき
-        SR.pulsewidth_us(1500);
-        SL.pulsewidth_us(1000);
-    }
-    //Y ボタン
-    if(buttons[3]){
-        pc.printf("Y\r\n");
-        speed = DEFAULT_SPEAD * 2; //加速
-    }else{
-        speed = DEFAULT_SPEAD;
-    }
-    //LB ボタン
-    if(buttons[4]){
-        pc.printf("LB\r\n");
-        if(!button_LB){
-            button_LB = true;
-            servo_diff = servo_diff - 25; //アームの閉まり具合を強くする
-        }
-    }else{
-        button_LB = false;
-    }
-    //RB ボタン
-    if(buttons[5]){
-        pc.printf("RB\r\n");
-        if(!button_RB){
-            button_RB = true;
-            servo_diff = servo_diff + 25; //アームの閉まり具合を弱くする
-        }
-    }else{
-        button_RB = false;
-    }
-
-    if(buttons[6]){
-        pc.printf("LT\r\n");
-        Whe.RotateLeft(speed);
-    }
-    //B ボタン
-    if(buttons[7]){
-        pc.printf("RT\r\n");
-        Whe.RotateRight(speed);
-    }
 }
 
+
+//Control関数に組み込み済み
 void Joystick(int8_t x, int8_t y,int8_t rx, int8_t ay){
     y=-y;
     ay=-ay;
@@ -208,6 +207,8 @@ void Joystick(int8_t x, int8_t y,int8_t rx, int8_t ay){
 }
 
 //**Buttons**// x, a, b, y, lb, rb, lt, rt, back, start, / / ↑, ↓, ←, → //**Buttons**//
+
+//Control関数に組み込み済み
 void Button(std::vector<bool> buttons){
     for (std::vector<bool>::iterator i = buttons.begin(); i != buttons.end(); i++)
     {
