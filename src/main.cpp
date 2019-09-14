@@ -31,13 +31,14 @@ Motor A(PWM_A, PHASE_A, 20000, true);
 Wheel Whe(R,L,B,100);
 
 
-int DEFAULT_SPEAD = 20000;
+int DEFAULT_SPEAD = 10000;
 int DEFAULT_ARM_SPEED = 8000;
 int servo_diff = 0;
 bool button_RB = false;
 bool button_LB = false;
 
 int speed = DEFAULT_SPEAD;
+int armSpeed = 8000;
 char ch;
 
 void Control(int8_t x, int8_t y,int8_t rx, int8_t ay,std::vector<bool> buttons){
