@@ -31,7 +31,7 @@ Motor A(PWM_A, PHASE_A, 20000, true);
 Wheel Whe(R,L,B,100);
 
 
-int DEFAULT_SPEAD = 10000;
+int DEFAULT_SPEAD = 4000;
 int DEFAULT_ARM_SPEED = 8000;
 int servo_diff = 0;
 bool button_RB = false;
@@ -61,9 +61,14 @@ void Control(int8_t x, int8_t y,int8_t rx, int8_t ay,std::vector<bool> buttons){
     //Y ボタン
     if(buttons[3]){
         pc.printf("Y\r\n");
-        speed = DEFAULT_SPEAD * 2; //加速(現状デフォルトが最速なので変化なし)
+        speed = DEFAULT_SPEAD * 2; //加速
     }else{
         speed = DEFAULT_SPEAD;
+    }
+    if(buttons[1]){
+        pc.printf("A\r\n");//強制停止
+        Whe.Brake();
+        wait(1);
     }
     //LB ボタン
     if(buttons[4]){
@@ -271,6 +276,7 @@ void Button(std::vector<bool> buttons){
 
 int main()
 {
+  
   led = 1;
   SR.period_ms(20);
   SL.period_ms(20);
